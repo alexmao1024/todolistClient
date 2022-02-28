@@ -1,1 +1,42 @@
-<p>list-add works!</p>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Add List"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="submitForm()"
+  nzOkText="submit"
+  nzCancelText="Cancel"
+  [nzOkLoading]="isOkLoading"
+>
+  <div *nzModalContent>
+    <form nz-form [formGroup]="validateForm" >
+      <nz-form-item *ngFor="let control of listOfControl; let i = index">
+        <nz-form-label [nzXs]="24" [nzSm]="4" *ngIf="i === 0" [nzFor]="control.controlInstance">
+          Your list
+        </nz-form-label>
+        <nz-form-control
+          [nzXs]="24"
+          [nzSm]="20"
+          [nzOffset]="i === 0 ? 0 : 4"
+          nzErrorTip="Please input list's name or delete this field."
+        >
+          <input
+            class="passenger-input"
+            nz-input
+            placeholder="name"
+            [attr.id]="control.id"
+            [formControlName]="control.controlInstance"
+          />
+          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField(control, $event)"></i>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+          <button nz-button nzType="dashed" class="add-button" (click)="addField($event)">
+            <i nz-icon nzType="plus"></i>
+            Add field
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+</nz-modal>

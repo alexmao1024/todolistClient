@@ -1,1 +1,42 @@
-<p>header works!</p>
+<nz-page-header
+  class="site-page-header"
+  nzTitle="To do List"
+>
+  <nz-page-header-extra>
+    <form *ngIf="!isLogin;else logged" nz-form [nzLayout]="'inline'" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input your username!">
+          <nz-input-group nzPrefixIcon="user">
+            <input formControlName="userName" nz-input placeholder="Username" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input your Password!">
+          <nz-input-group nzPrefixIcon="lock">
+            <input formControlName="password" nz-input type="password" placeholder="Password" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button nzType="primary" [disabled]="!validateForm.valid">Log in</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+    <ng-template #logged>
+      <h3>您好，用户：<a nz-dropdown [nzDropdownMenu]="menu">
+        Alex
+        <i nz-icon nzType="down"></i>
+      </a></h3>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu nzSelectable>
+          <li nz-menu-item>1st menu item</li>
+          <li nz-menu-item>2nd menu item</li>
+          <li nz-menu-item>3rd menu item</li>
+          <li nz-menu-item nzDanger>4th danger item</li>
+        </ul>
+      </nz-dropdown-menu>
+    </ng-template>
+  </nz-page-header-extra>
+</nz-page-header>

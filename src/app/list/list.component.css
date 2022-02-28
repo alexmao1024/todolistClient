@@ -1,0 +1,25 @@
+nz-content {
+  background: #fff;
+  padding-bottom: 0;
+  padding-top: 0;
+  padding-right: 0;
+  padding-left: 24px;
+  min-height: 280px;
+}
+
+nz-breadcrumb {
+  margin: 16px 0;
+}
+
+.inner-content {
+  background: #fff;
+  min-height: 380px;
+}
+
+.send-request {
+  margin-bottom: 16px;
+}
+
+.send-request span {
+  margin-left: 8px;
+}

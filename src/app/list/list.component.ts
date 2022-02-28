@@ -1,95 +1,100 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {List} from "../model/list.model";
 import {ListService} from "../service/list.service";
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.css']
 })
-export class ListComponent implements OnInit{
+export class ListComponent implements OnInit, OnDestroy{
+  private listsChangeSub: Subscription;
+
   lists: List[];
-  editList: List;
-  toggleAll: boolean = true;
+  addIsVisible: boolean = false;
+  editIsVisible: boolean = false;
 
-  @ViewChild('nameInput', {static: false}) nameInputRef: ElementRef;
+  listItem :List;
+  listIndex:number;
 
-  @HostListener('document:click', ['$event']) bodyClick(event) {
-    if (event.target.id != 'save-button' && event.target.id != 'edit') {
-      this.editList = null;
+  editId: string | null = null;
+
+  constructor(private listService: ListService,public msg: NzMessageService) {
+
+  }
+
+  startEdit(id: string): void {
+    this.editId = id;
+  }
+
+  stopEdit(): void {
+    this.editId = null;
+  }
+
+  ngOnDestroy(): void {
+    this.listsChangeSub.unsubscribe();
     }
-  }
-
-  constructor(private listService: ListService) {
-
-  }
 
   ngOnInit(): void {
     this.lists = this.listService.lists;
-    this.listService.listsChanged.subscribe(
+    this.listsChangeSub = this.listService.listsChanged.subscribe(
       (lists:List[]) => {
         this.lists = lists;
-
       }
     );
   }
 
-  onAddList(event):void {
-    const nameText = event.target.value;
-    if (!nameText.length) {
-      return;
-    }
-    let lastList = this.lists[this.lists.length - 1];
-    const newList = new List(
-      lastList ? lastList.id + 1 : 1,
-      nameText,
-      false
-    )
-    this.listService.addList(newList);
+  onBack() {
 
-    event.target.value = '';
   }
 
-  onSelectDone(index: number) {
-    this.listService.selectDone(index);
-    this.toggleAll = this.listService.toggleAll;
+  onShowAddModal(): void {
+    this.addIsVisible = true;
   }
 
-  onToggleAll(event:boolean) {
-    this.listService.toggleAll = event;
+  onCloseAddModel() {
+    this.addIsVisible = false;
   }
 
-  onRemoveList(index: number) {
+  onRemoveList(index:number) {
     this.listService.removeList(index);
   }
 
-  onSaveEdit(list:List,index:number,event) {
-    if (list.done)
-    {
-      if (event)
-      {
-        event.target.value = this.editList.name;
-      }
-      this.editList = null;
-      return
-    }
-    console.log(this.nameInputRef.nativeElement.value);
-    list.name = this.nameInputRef.nativeElement.value;
-    this.listService.editList(list,index);
-    this.editList = null;
+  onShowEditModal(list:List,index:number) {
+    this.editIsVisible = true;
+    this.listIndex = index;
+    this.listItem = new List(list.id,list.name,list.done);
   }
 
-  handleEditKeyUp (event) {
-    const {keyCode,target} = event;
-    if (keyCode === 27){
-      target.value = this.editList.name;
-      this.editList = null;
-    }
+  onCloseEditModel() {
+    this.editIsVisible = false;
   }
+
+  onItemChecked(index: number): void {
+    this.listService.selectDone(index);
+  }
+
+  onAllChecked(value: boolean): void {
+    this.listService.toggleAll = value;
+  }
+
+  onClearDone() {
+    this.listService.removeLists(this.listService.selectLists);
+  }
+
+  get toggleAll () {
+    return this.listService.toggleAll;
+  }
+
+  get toggleSome () {
+    return this.listService.toggleSome;
+  }
+
+  get selectListCount () {
+    return this.listService.selectLists.length;
+  }
+
+
 }
