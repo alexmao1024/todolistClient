@@ -8,7 +8,7 @@ import { zh_CN } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
@@ -25,14 +25,22 @@ import { NzCascaderModule } from 'ng-zorro-antd/cascader';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import {ListService} from "./service/list.service";
 import {ListComponent} from "./list/list.component";
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import {NzMessageService} from "ng-zorro-antd/message";
-import { SiderComponent } from './sider/sider.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 import { ListAddComponent } from './list/list-add/list-add.component';
 import { ListEditComponent } from './list/list-edit/list-edit.component';
+import { AuthComponent } from './header/auth/auth.component';
+import { HostComponent } from './host/host.component';
+import {AuthInterceptorService} from "./header/auth/auth-interceptor.service";
 
 
 
@@ -44,9 +52,11 @@ registerLocaleData(zh);
     ListComponent,
     HeaderComponent,
     FooterComponent,
-    SiderComponent,
+    SidebarComponent,
     ListAddComponent,
-    ListEditComponent
+    ListEditComponent,
+    AuthComponent,
+    HostComponent
   ],
   imports: [
     BrowserModule,
@@ -70,9 +80,26 @@ registerLocaleData(zh);
     NzSelectModule,
     NzCheckboxModule,
     NzTableModule,
-    ReactiveFormsModule
+    NzSpinModule,
+    NzPopconfirmModule,
+    NzAvatarModule,
+    NzGridModule,
+    NzTypographyModule,
+    ReactiveFormsModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN },ListService,NzMessageService,FormBuilder,FormControl,Validators],
+  providers: [
+    { provide: NZ_I18N, useValue: zh_CN },
+    ListService,
+    NzMessageService,
+    FormBuilder,
+    FormControl,
+    Validators,
+    {
+      provide:HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi:true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

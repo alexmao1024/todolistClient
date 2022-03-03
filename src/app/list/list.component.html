@@ -3,28 +3,18 @@
     class="site-page-header"
     (nzBack)="onBack()"
     nzBackIcon
-    nzTitle="Task"
+    nzTitle="List"
   >
-    <nz-breadcrumb nz-page-header-breadcrumb>
-      <nz-breadcrumb-item>
-        <a>Host</a>
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        <a>List</a>
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        <a>Task</a>
-      </nz-breadcrumb-item>
-    </nz-breadcrumb>
     <nz-page-header-extra>
       <div class="send-request">
         <button nz-button nzType="primary" (click)="onShowAddModal()">Add</button>
-        <app-list-add [isVisible]="addIsVisible" (invisible)="onCloseAddModel()"></app-list-add>
+        <app-list-add [currentUser]="currentUser" [isVisible]="addIsVisible" (invisible)="onCloseAddModel()"></app-list-add>
         <button
           nz-button
           nzType="danger"
           [disabled]="!toggleSome"
           (click)="onClearDone()"
+          [nzLoading]="isClearDoneLoading"
         >
           Clear Finished Items
         </button>
@@ -33,10 +23,11 @@
     </nz-page-header-extra>
   </nz-page-header>
   <div class="inner-content">
+    <nz-spin *ngIf="isLoading" nzTip="Loading..."></nz-spin>
     <nz-table
+      *ngIf="!isLoading"
+      #listsData
       [nzData]="lists"
-      #rowSelectionTable
-      nzShowSizeChanger
     >
       <thead>
       <tr>
@@ -46,21 +37,31 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let list of lists; let i = index">
+      <tr *ngFor="let list of listsData.data; let i = index">
         <td
           [nzChecked]="list.done"
-          (nzCheckedChange)="onItemChecked(i)"
+          (nzCheckedChange)="onItemChecked(list,i)"
         ></td>
         <td>
           <div class="editable-cell" [hidden]="editId === list.id && !list.done" (click)="startEdit(list.id)">
-            {{ list.name }}
+            <span nz-typography><del *ngIf="list.done;else unfinished">{{ list.name }}</del></span>
+            <ng-template #unfinished>
+              {{ list.name }}
+            </ng-template>
           </div>
-          <input [hidden]="editId !== list.id || list.done" type="text" nz-input [(ngModel)]="list.name" (blur)="stopEdit()" />
+          <input
+            [hidden]="editId !== list.id || list.done"
+            type="text"
+            nz-input
+            [value]="list.name"
+            (blur)="stopEdit(list,i)"
+            #inputElement
+          />
         </td>
         <td>
           <nz-space [nzSize]="'small'">
             <a *nzSpaceItem  [hidden]="list.done" nz-button nzType="link" (click)="onShowEditModal(list,i)">edit</a>
-            <a *nzSpaceItem  nz-button nzType="link" (click)="onRemoveList(i)">remove</a>
+            <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === list.id &&isRemoveLoading" (click)="onRemoveList(list.id,i)">remove</a>
             <a *nzSpaceItem  nz-button nzType="link" (click)="msg.info('more')">more</a>
           </nz-space>
         </td>
@@ -69,4 +70,15 @@
     </nz-table>
   </div>
 </nz-content>
-<app-list-edit [editListIndex]="listIndex" [editList]="listItem" [isVisible]="editIsVisible" (invisible)="onCloseEditModel()"></app-list-edit>
+<nz-modal
+  [(nzVisible)]="isMouseOut"
+  nzTitle="Confirm"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+>
+  <ng-container *nzModalContent>
+    <h3>You still have unsaved data, are you sure you want to modify it?</h3>
+  </ng-container>
+</nz-modal>
+<app-list-edit [currentUser]="currentUser" [editListIndex]="listIndex" [editList]="listItem" [isVisible]="editIsVisible" (invisible)="onCloseEditModel()"></app-list-edit>

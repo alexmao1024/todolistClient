@@ -1,0 +1,44 @@
+<form
+  *ngIf="!isLogin"
+  nz-form [nzLayout]="'inline'"
+  [formGroup]="validateForm"
+  (ngSubmit)="submitForm()"
+>
+  <nz-form-item>
+    <nz-form-control nzErrorTip="Please input your username!">
+      <nz-input-group nzPrefixIcon="user">
+        <input
+          formControlName="username"
+          nz-input placeholder="Username"
+          autocomplete="username"
+        />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control nzErrorTip="Please input your Password!">
+      <nz-input-group nzPrefixIcon="lock">
+        <input
+          formControlName="password"
+          nz-input type="password"
+          placeholder="Password"
+          autocomplete="off"
+        />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <nz-space [nzSize]="'small'">
+        <button
+          *nzSpaceItem
+          nz-button
+          nzType="primary"
+          [disabled]="!validateForm.valid"
+          [nzLoading]="isLoading"
+        >{{ !isLoginMode? 'Sign Up': 'Log in' }}</button>
+        <a *nzSpaceItem  nz-button nzType="link" (click)="onSwitch()">Switch to {{ isLoginMode? 'Sign Up': 'Log in' }}</a>
+      </nz-space>
+    </nz-form-control>
+  </nz-form-item>
+</form>

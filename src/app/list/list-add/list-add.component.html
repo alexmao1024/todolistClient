@@ -3,6 +3,7 @@
   nzTitle="Add List"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="submitForm()"
+  [nzOkDisabled]="!validateForm.valid"
   nzOkText="submit"
   nzCancelText="Cancel"
   [nzOkLoading]="isOkLoading"

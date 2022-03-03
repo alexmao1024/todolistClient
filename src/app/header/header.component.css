@@ -1,16 +1,18 @@
-.logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 24px 16px 0;
-  float: left;
-}
 
-nz-header {
-  position: fixed;
-  width: 100%;
+
+nz-page-header {
+  padding: 5px 24px 5px 24px;
 }
 
 [nz-menu] {
   line-height: 64px;
+}
+
+h3 {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+nz-avatar {
+  margin-bottom: 5px;
 }

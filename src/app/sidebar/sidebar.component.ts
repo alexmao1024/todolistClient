@@ -2,20 +2,26 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from "rxjs";
 import {List} from "../model/list.model";
 import {ListService} from "../service/list.service";
+import {AuthService} from "../service/auth.service";
 
 @Component({
-  selector: 'app-sider',
-  templateUrl: './sider.component.html',
-  styleUrls: ['./sider.component.css']
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.css']
 })
-export class SiderComponent implements OnInit,OnDestroy{
+export class SidebarComponent implements OnInit,OnDestroy{
   private listsChangeSub: Subscription;
+  private userSub: Subscription;
 
+  isAuthenticated:boolean = false;
   lists: List[];
 
-  constructor(private listService: ListService) { }
+  constructor(private listService: ListService,private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.userSub = this.authService.user.subscribe(user=>{
+      this.isAuthenticated = !!user;
+    })
     this.lists = this.listService.lists;
     this.listsChangeSub = this.listService.listsChanged.subscribe(
       (lists:List[]) => {
@@ -25,6 +31,7 @@ export class SiderComponent implements OnInit,OnDestroy{
   }
 
   ngOnDestroy(): void {
+    this.userSub.unsubscribe();
     this.listsChangeSub.unsubscribe();
   }
 

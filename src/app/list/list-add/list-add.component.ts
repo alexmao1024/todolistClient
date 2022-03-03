@@ -2,7 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ListService} from "../../service/list.service";
 import {List} from "../../model/list.model";
-import {formatNumber} from "@angular/common";
+import {DataStorageService} from "../../service/data-storage.service";
+import {User} from "../../model/user.model";
 
 @Component({
   selector: 'app-list-add',
@@ -12,6 +13,7 @@ import {formatNumber} from "@angular/common";
 export class ListAddComponent implements OnInit {
 
   @Input() isVisible = false;
+  @Input() currentUser: User;
   @Output() invisible = new EventEmitter<void>();
   isOkLoading = false;
 
@@ -19,7 +21,7 @@ export class ListAddComponent implements OnInit {
   validateForm!: FormGroup;
   listOfControl: Array<{ id: number; controlInstance: string }> = [];
 
-  constructor(private fb: FormBuilder,private listService: ListService) { }
+  constructor(private fb: FormBuilder,private listService: ListService,private dataStorageService: DataStorageService) { }
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({});
@@ -63,25 +65,24 @@ export class ListAddComponent implements OnInit {
   }
 
   submitForm(): void {
-    console.log(1,this.validateForm.valid);
     if (this.validateForm.valid) {
-      let lastList = this.listService.lists[this.listService.lists.length - 1];
-      let lastListId = lastList ? lastList.id : 1;
+
       this.newLists = Object.values(this.validateForm.value).map(
-        (element:string,index:number) => {
-          return new List(lastListId+1+index,element,false)
+        (element:string) => {
+          return new List(null,element,false,+this.currentUser.id);
         }
       );
-      this.listService.addList(this.newLists);
       this.isOkLoading = true;
-      this.isVisible = false;
-      this.invisible.emit();
-      this.isOkLoading = false;
-      this.listOfControl.forEach(value =>{
-        this.validateForm.removeControl(value.controlInstance);
+      this.dataStorageService.postLists(this.newLists,+this.currentUser.id).subscribe( value => {
+        this.isOkLoading = false;
+        this.isVisible = false;
+        this.invisible.emit();
+        this.listOfControl.forEach(value =>{
+          this.validateForm.removeControl(value.controlInstance);
+        });
+        this.listOfControl = [];
+        this.addField();
       });
-      this.listOfControl = [];
-      this.addField();
     } else {
       this.setControlValid();
     }

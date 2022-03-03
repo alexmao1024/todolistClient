@@ -1,27 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
+import {AuthService} from "../service/auth.service";
+import {User} from "../model/user.model";
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
-  validateForm!: FormGroup;
-  isLogin: boolean = false;
+export class HeaderComponent implements OnInit,OnDestroy{
+  isAuthenticated = false;
+  private userSub: Subscription;
+  currentUser: User;
 
-  submitForm(): void {
-    console.log('submit', this.validateForm.value);
+  constructor(private authService: AuthService) {
   }
 
-  constructor(private fb: FormBuilder) {}
-
   ngOnInit(): void {
-    this.validateForm = this.fb.group({
-      userName: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true]
+    this.userSub = this.authService.user.subscribe(user => {
+      this.isAuthenticated = !!user;
+      this.currentUser = user;
     });
   }
 
+  onLogout() {
+    this.authService.logout();
+  }
+
+  ngOnDestroy(): void {
+    this.userSub.unsubscribe();
+  }
 }

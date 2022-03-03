@@ -2,16 +2,22 @@ import {List} from "../model/list.model";
 import {Subject} from "rxjs";
 
 export class ListService {
+  constructor() {
+  }
+
   listsChanged = new Subject<List[]>();
 
-  private _lists: List[] = [
-    new List(1,'吃饭',true),
-    new List(2,'睡觉',true)
-  ];
+  private _lists: List[] = [];
+
+  setList(lists: List[]) {
+    this._lists = lists;
+    this.listsChanged.next(this._lists.slice());
+  }
 
   get lists(): List[] {
     return this._lists.slice();
   }
+
 
   get toggleAll () {
     return this._lists.every( list => list.done );
@@ -45,12 +51,8 @@ export class ListService {
     this.listsChanged.next(this._lists.slice());
   }
 
-  removeLists(lists: List[]) {
-    lists.forEach((value1) => {
-      this._lists = this._lists.filter(value2 => {
-        value1.id !== value2.id;
-      });
-    });
+  removeLists() {
+    this._lists = this._lists.filter(list => !list.done);
     this.listsChanged.next(this._lists.slice());
   }
 

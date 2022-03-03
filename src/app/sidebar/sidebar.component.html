@@ -1,0 +1,31 @@
+<ul *ngIf="isAuthenticated;else sideTemplate" nz-menu nzMode="inline" class="sider-menu">
+  <li nz-submenu nzTitle="Your To Do Lists" nzIcon="appstore">
+    <ul *ngFor="let list of lists">
+      <li nz-menu-item *ngIf="!list.tasks; else submenu">{{ list.name }}</li>
+      <ng-template #submenu>
+        <li nz-submenu nzTitle="{{ list.name }}">
+          <ul *ngFor="let task of list.tasks">
+            <li nz-menu-item>{{ task.name }}</li>
+          </ul>
+        </li>
+      </ng-template>
+    </ul>
+  </li>
+</ul>
+<ng-template #sideTemplate>
+  <ul nz-menu nzMode="inline" class="sider-menu">
+    <li nz-submenu nzTitle="Your To Do Lists" nzIcon="appstore" nzOpen>
+      <ul>
+        <li nz-menu-item>Trip</li>
+        <li nz-submenu nzTitle="Work" nzOpen>
+          <ul>
+            <li nz-menu-item>Wake up</li>
+            <li nz-menu-item>Take the subway</li>
+            <li nz-menu-item>Back Home</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</ng-template>
+
