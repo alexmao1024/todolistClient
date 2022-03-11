@@ -43,7 +43,7 @@
           (nzCheckedChange)="onItemChecked(list,i)"
         ></td>
         <td>
-          <div class="editable-cell" [hidden]="editId === list.id && !list.done" (click)="startEdit(list.id)">
+          <div class="editable-cell" [hidden]="editId === list.id && !list.done" (click)="startEdit(list)">
             <span nz-typography><del *ngIf="list.done;else unfinished">{{ list.name }}</del></span>
             <ng-template #unfinished>
               {{ list.name }}
@@ -53,15 +53,14 @@
             [hidden]="editId !== list.id || list.done"
             type="text"
             nz-input
-            [value]="list.name"
+            [(ngModel)]="list.name"
             (blur)="stopEdit(list,i)"
-            #inputElement
           />
         </td>
         <td>
           <nz-space [nzSize]="'small'">
             <a *nzSpaceItem  [hidden]="list.done" nz-button nzType="link" (click)="onShowEditModal(list,i)">edit</a>
-            <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === list.id &&isRemoveLoading" (click)="onRemoveList(list.id,i)">remove</a>
+            <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === list.id &&isRemoveLoading" (click)="onRemoveList(list,i)">remove</a>
             <a *nzSpaceItem  nz-button nzType="link" (click)="msg.info('more')">more</a>
           </nz-space>
         </td>

@@ -3,6 +3,8 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthResponseData, AuthService} from "../../service/auth.service";
 import {Observable} from "rxjs";
 import {Router} from "@angular/router";
+import {NzMessageService} from "ng-zorro-antd/message";
+import {ValidatorsService} from "../../service/validators.service";
 
 @Component({
   selector: 'app-auth',
@@ -14,9 +16,12 @@ export class AuthComponent implements OnInit {
   isLogin: boolean = false;
   isLoginMode: boolean = true;
   isLoading: boolean = false;
-  error: string;
 
-  constructor(private authService:AuthService,private router:Router,private fb: FormBuilder) {
+  constructor(private authService:AuthService,
+              private router:Router,
+              private fb: FormBuilder,
+              private message: NzMessageService,
+              private validatorsService: ValidatorsService) {
   }
 
   submitForm(): void {
@@ -40,7 +45,7 @@ export class AuthComponent implements OnInit {
           this.router.navigate(['/lists']);
         },
         errorMessage => {
-          this.error = errorMessage;
+          this.message.create('error',errorMessage);
           this.isLoading = false;
         }
       );
@@ -58,8 +63,8 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      username: [null, [Validators.required]],
-      password: [null, [Validators.required]]
+      username: [null,[Validators.required],[this.validatorsService.usernameAsyncValidator]],
+      password: [null,[Validators.required],[this.validatorsService.passwordAsyncValidator]]
     });
   }
 

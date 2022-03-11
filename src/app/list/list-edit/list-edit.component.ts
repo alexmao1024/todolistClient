@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ListService} from "../../service/list.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {List} from "../../model/list.model";
 import {DataStorageService} from "../../service/data-storage.service";
 import {User} from "../../model/user.model";
+import {NzMessageService} from "ng-zorro-antd/message";
+import {Observable, Observer} from "rxjs";
+import {ValidatorsService} from "../../service/validators.service";
 
 @Component({
   selector: 'app-list-edit',
@@ -22,11 +25,13 @@ export class ListEditComponent implements OnInit {
 
   constructor(private listService: ListService,
               private fb: FormBuilder,
-              private dataStorageService: DataStorageService) { }
+              private dataStorageService: DataStorageService,
+              private message: NzMessageService,
+              private validatorsService: ValidatorsService) { }
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      listName: [null, [Validators.required]]
+      listName: [null, [Validators.required],[this.validatorsService.nameAsyncValidator]]
     });
   }
 
@@ -44,18 +49,17 @@ export class ListEditComponent implements OnInit {
     }
   }
 
-
-
   submitForm(): void {
-    console.log(this.validateForm.valid);
     if (this.validateForm.valid) {
       this.isOkLoading = true;
-      this.dataStorageService.patchList(this.editList,+this.currentUser.id,true).subscribe(value => {
-        this.listService.editList(this.editList,this.editListIndex);
-        this.isOkLoading = false;
-        this.isVisible = false;
-        this.invisible.emit();
-      })
+      this.dataStorageService.patchList(this.editList,+this.currentUser.id,true,false,null).subscribe(value => {
+          this.listService.editList(this.editList,this.editListIndex);
+          this.resetSubmit();
+      },
+        errorMessage => {
+          this.message.create('error',errorMessage);
+          this.resetSubmit();
+        })
     } else {
       Object.values(this.validateForm.controls).forEach(control => {
         if (control.invalid) {
@@ -64,5 +68,11 @@ export class ListEditComponent implements OnInit {
         }
       });
     }
+  }
+
+  private resetSubmit() {
+    this.isOkLoading = false;
+    this.isVisible = false;
+    this.invisible.emit();
   }
 }

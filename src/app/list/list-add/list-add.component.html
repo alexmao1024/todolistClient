@@ -18,7 +18,7 @@
           [nzXs]="24"
           [nzSm]="20"
           [nzOffset]="i === 0 ? 0 : 4"
-          nzErrorTip="Please input list's name or delete this field."
+          [nzErrorTip]="nameErrorTpl"
         >
           <input
             class="passenger-input"
@@ -27,6 +27,10 @@
             [attr.id]="control.id"
             [formControlName]="control.controlInstance"
           />
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Please input list's name or delete this field!</ng-container>
+            <ng-container *ngIf="control.hasError('regMatch')">Cannot exceed 50 characters!</ng-container>
+          </ng-template>
           <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField(control, $event)"></i>
         </nz-form-control>
       </nz-form-item>

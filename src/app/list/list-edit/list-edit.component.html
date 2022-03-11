@@ -11,8 +11,12 @@
     <form nz-form [formGroup]="validateForm">
       <nz-form-item>
         <nz-form-label [nzSpan]="5" nzRequired nzFor="list">Your List</nz-form-label>
-        <nz-form-control [nzSpan]="12" nzErrorTip="Please input your list name!">
+        <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
           <input id="note" type="text" nz-input formControlName="listName" placeholder="name" [(ngModel)]="editList.name"/>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Please input list's name!</ng-container>
+            <ng-container *ngIf="control.hasError('regMatch')">Cannot exceed 50 characters!</ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
     </form>

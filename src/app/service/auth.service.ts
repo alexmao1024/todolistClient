@@ -110,18 +110,24 @@ export class AuthService {
 
   private static handleError(errorRes: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
-    if (!errorRes.error || !errorRes.error.error) {
+    if (!errorRes.error) {
       return throwError(errorMessage);
     }
-    switch (errorRes.error.error.message) {
+    switch (errorRes.error) {
       case 'USERNAME_EXISTS':
-        errorMessage = 'This email exists already.';
+        errorMessage = 'This username exists already.';
         break;
       case 'USERNAME_NOT_FOUND':
-        errorMessage = 'This email does not exist.';
+        errorMessage = 'The username error.';
+        break;
+      case 'USER_NOT_FOUND':
+        errorMessage = 'This user does not exist.';
         break;
       case 'INVALID_PASSWORD':
         errorMessage = 'This password is not correct.';
+        break;
+      case 'INVALID_CHARACTER':
+        errorMessage = 'Your username contains invalid characters.';
         break;
     }
     return throwError(errorMessage);

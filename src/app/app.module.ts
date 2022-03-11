@@ -30,6 +30,7 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 import {ListService} from "./service/list.service";
 import {ListComponent} from "./list/list.component";
 import { HeaderComponent } from './header/header.component';
@@ -41,6 +42,7 @@ import { ListEditComponent } from './list/list-edit/list-edit.component';
 import { AuthComponent } from './header/auth/auth.component';
 import { HostComponent } from './host/host.component';
 import {AuthInterceptorService} from "./header/auth/auth-interceptor.service";
+import { TaskComponent } from './list/task/task.component';
 
 
 
@@ -56,7 +58,8 @@ registerLocaleData(zh);
     ListAddComponent,
     ListEditComponent,
     AuthComponent,
-    HostComponent
+    HostComponent,
+    TaskComponent
   ],
   imports: [
     BrowserModule,
@@ -86,6 +89,7 @@ registerLocaleData(zh);
     NzGridModule,
     NzTypographyModule,
     ReactiveFormsModule,
+    NzMessageModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },
@@ -98,7 +102,7 @@ registerLocaleData(zh);
       provide:HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,
       multi:true
-    }
+    },
   ],
   bootstrap: [AppComponent]
 })

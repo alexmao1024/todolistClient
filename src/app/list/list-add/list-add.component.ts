@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {ListService} from "../../service/list.service";
 import {List} from "../../model/list.model";
 import {DataStorageService} from "../../service/data-storage.service";
 import {User} from "../../model/user.model";
+import {NzMessageService} from "ng-zorro-antd/message";
+import {Observable, Observer} from "rxjs";
+import {ValidatorsService} from "../../service/validators.service";
 
 @Component({
   selector: 'app-list-add',
@@ -21,7 +24,11 @@ export class ListAddComponent implements OnInit {
   validateForm!: FormGroup;
   listOfControl: Array<{ id: number; controlInstance: string }> = [];
 
-  constructor(private fb: FormBuilder,private listService: ListService,private dataStorageService: DataStorageService) { }
+  constructor(private fb: FormBuilder,
+              private listService: ListService,
+              private dataStorageService: DataStorageService,
+              private message: NzMessageService,
+              private validatorsService: ValidatorsService) { }
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({});
@@ -51,7 +58,7 @@ export class ListAddComponent implements OnInit {
     const index = this.listOfControl.push(control);
     this.validateForm.addControl(
       this.listOfControl[index - 1].controlInstance,
-      new FormControl(null, Validators.required)
+      new FormControl(null, [Validators.required],[this.validatorsService.nameAsyncValidator])
     );
   }
 
@@ -69,20 +76,17 @@ export class ListAddComponent implements OnInit {
 
       this.newLists = Object.values(this.validateForm.value).map(
         (element:string) => {
-          return new List(null,element,false,+this.currentUser.id);
+          return new List(null,element,false);
         }
       );
       this.isOkLoading = true;
       this.dataStorageService.postLists(this.newLists,+this.currentUser.id).subscribe( value => {
-        this.isOkLoading = false;
-        this.isVisible = false;
-        this.invisible.emit();
-        this.listOfControl.forEach(value =>{
-          this.validateForm.removeControl(value.controlInstance);
+        this.resetSubmit();
+      },
+        errorMessage => {
+          this.message.create('error',errorMessage);
+          this.resetSubmit();
         });
-        this.listOfControl = [];
-        this.addField();
-      });
     } else {
       this.setControlValid();
     }
@@ -95,5 +99,16 @@ export class ListAddComponent implements OnInit {
         control.updateValueAndValidity({ onlySelf: true });
       }
     });
+  }
+
+  private resetSubmit () {
+    this.isOkLoading = false;
+    this.isVisible = false;
+    this.invisible.emit();
+    this.listOfControl.forEach(value =>{
+      this.validateForm.removeControl(value.controlInstance);
+    });
+    this.listOfControl = [];
+    this.addField();
   }
 }

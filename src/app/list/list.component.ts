@@ -13,7 +13,6 @@ import {AuthService} from "../service/auth.service";
   styleUrls: ['./list.component.css']
 })
 export class ListComponent implements OnInit, OnDestroy{
-  @ViewChild('inputElement') editEleRef: ElementRef;
 
   private listsChangeSub: Subscription;
   private userSub: Subscription;
@@ -41,16 +40,18 @@ export class ListComponent implements OnInit, OnDestroy{
   constructor(private listService: ListService,
               public msg: NzMessageService,
               private dataStorageService:DataStorageService,
-              private authService:AuthService) {
+              private authService:AuthService,
+              private message: NzMessageService) {
   }
 
-  startEdit(id: number): void {
-    this.editId = id;
+  startEdit(list: List): void {
+    this.editId = list.id;
+    this.originEditList = new List(list.id,list.name,list.done);
   }
 
   stopEdit(list:List,index:number): void {
-    this.originEditList = new List(list.id,list.name,list.done,list.userId);
-    this.editList = new List(list.id,this.editEleRef.nativeElement.value,list.done,list.userId);
+    list.name = ListComponent.trim(list.name);
+    this.editList = list;
     this.editIndex = index;
     this.isMouseOut = true;
   }
@@ -68,7 +69,11 @@ export class ListComponent implements OnInit, OnDestroy{
       this.isLoading = true;
       this.dataStorageService.fetchLists(+this.currentUser.id).subscribe( value => {
         this.isLoading = false;
-      });
+      },
+        errorMessage => {
+          this.message.create('error',errorMessage);
+          this.isLoading = false;
+        });
       this.listsChangeSub = this.listService.listsChanged.subscribe(
         (lists:List[]) => {
           this.lists = lists;
@@ -90,12 +95,16 @@ export class ListComponent implements OnInit, OnDestroy{
     this.addIsVisible = false;
   }
 
-  onRemoveList(id:number,index:number) {
-    this.removeId = id;
+  onRemoveList(list:List,index:number) {
+    this.removeId = list.id;
     this.isRemoveLoading = true;
-    this.dataStorageService.deleteList(id,+this.currentUser.id).subscribe(value => {
+    this.dataStorageService.deleteLists([list],+this.currentUser.id).subscribe(value => {
       this.listService.removeList(index);
       this.isRemoveLoading = false;
+      },
+      errorMessage => {
+        this.message.create('error',errorMessage);
+        this.isRemoveLoading = false;
       }
     )
   }
@@ -103,7 +112,7 @@ export class ListComponent implements OnInit, OnDestroy{
   onShowEditModal(list:List,index:number) {
     this.editIsVisible = true;
     this.listIndex = index;
-    this.listItem = new List(list.id,list.name,list.done,+this.currentUser.id);
+    this.listItem = new List(list.id,list.name,list.done);
   }
 
   onCloseEditModel() {
@@ -111,12 +120,20 @@ export class ListComponent implements OnInit, OnDestroy{
   }
 
   onItemChecked(list:List,index: number): void {
-    this.dataStorageService.patchList(list,+this.currentUser.id,false).subscribe();
+    this.dataStorageService.patchList(list,+this.currentUser.id,false,false,null).subscribe(value => {
+      },
+      errorMessage => {
+        this.message.create('error',errorMessage);
+      });
     this.listService.selectDone(index);
   }
 
   onAllChecked(value: boolean): void {
-    this.dataStorageService.patchToggleAll(value,+this.currentUser.id).subscribe();
+    this.dataStorageService.patchList(null,+this.currentUser.id,false,true,value).subscribe(value1 => {
+    },
+      errorMessage => {
+        this.message.create('error',errorMessage);
+      });
     this.listService.toggleAll = value;
   }
 
@@ -126,7 +143,11 @@ export class ListComponent implements OnInit, OnDestroy{
     subscribe(value => {
       this.listService.removeLists();
       this.isClearDoneLoading = false;
-    });
+    },
+      errorMessage => {
+        this.message.create('error',errorMessage);
+        this.isClearDoneLoading = false;
+      });
   }
 
   get toggleAll () {
@@ -142,18 +163,30 @@ export class ListComponent implements OnInit, OnDestroy{
   }
 
   handleCancel() {
-    this.editEleRef.nativeElement.value = this.originEditList.name;
+    this.editList.name = this.originEditList.name;
     this.isMouseOut = false;
     this.editId = null;
   }
 
   handleOk() {
     this.isOkLoading = true;
-    this.dataStorageService.patchList(this.editList,+this.currentUser.id,true).subscribe(value => {
+    this.dataStorageService.patchList(this.editList,+this.currentUser.id,true,false,null).subscribe(value => {
       this.listService.editList(this.editList,this.editIndex);
       this.isOkLoading = false;
       this.isMouseOut = false;
       this.editId = null;
-    })
+    },
+      errorMessage => {
+        this.message.create('error',errorMessage);
+        this.editList.name = this.originEditList.name;
+        this.isOkLoading = false;
+        this.isMouseOut = false;
+        this.editId = null;
+      })
+  }
+
+  private static trim(str:string){
+    const reg = /^\s+|\s+$/g;
+    return str.replace(reg,'');
   }
 }
