@@ -1,0 +1,38 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="{{ isAdd? 'Add Task' : 'Edit Task'}}"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="submitForm()"
+  [nzOkDisabled]="!validateForm.valid"
+  nzOkText="submit"
+  nzCancelText="Cancel"
+  [nzOkLoading]="isOkLoading"
+  nzWidth="600px"
+>
+  <div *nzModalContent>
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5" nzRequired nzFor="name">Name</nz-form-label>
+        <nz-form-control [nzSpan]="24" [nzErrorTip]="nameErrorTpl">
+          <input type="text" nz-input formControlName="name" placeholder="name"/>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Please input task's name!</ng-container>
+            <ng-container *ngIf="control.hasError('regMatch')">Cannot exceed 50 characters!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5" nzFor="content">Content</nz-form-label>
+        <nz-form-control [nzSpan]="24" nzErrorTip="Cannot exceed 255 characters!">
+          <textarea nz-input formControlName="content" rows="6" placeholder="content"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5" nzFor="dateTimeRange">DateTimeRange</nz-form-label>
+        <nz-form-control [nzSm]="16" [nzXs]="24">
+          <nz-range-picker nzShowTime formControlName="dateTimeRange"></nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+</nz-modal>

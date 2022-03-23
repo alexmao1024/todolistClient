@@ -3,6 +3,7 @@
   nzTitle="Edit List"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="submitForm()"
+  [nzOkDisabled]="!validateForm.valid"
   nzOkText="submit"
   nzCancelText="Cancel"
   [nzOkLoading]="isOkLoading"
@@ -10,9 +11,9 @@
   <div *nzModalContent>
     <form nz-form [formGroup]="validateForm">
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="list">Your List</nz-form-label>
+        <nz-form-label [nzSpan]="5" nzRequired nzFor="listName">Your List</nz-form-label>
         <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
-          <input id="note" type="text" nz-input formControlName="listName" placeholder="name" [(ngModel)]="editList.name"/>
+          <input type="text" nz-input formControlName="listName" placeholder="name" [(ngModel)]="editList.name"/>
           <ng-template #nameErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">Please input list's name!</ng-container>
             <ng-container *ngIf="control.hasError('regMatch')">Cannot exceed 50 characters!</ng-container>

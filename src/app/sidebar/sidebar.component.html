@@ -1,11 +1,30 @@
 <ul *ngIf="isAuthenticated;else sideTemplate" nz-menu nzMode="inline" class="sider-menu">
-  <li nz-submenu nzTitle="Your To Do Lists" nzIcon="appstore">
-    <ul *ngFor="let list of lists">
-      <li nz-menu-item *ngIf="!list.tasks; else submenu">{{ list.name }}</li>
+  <li nz-submenu nzTitle="Your To Do Lists" nzIcon="schedule" (click)="onOpenList()" nzOpen>
+    <ul *ngFor="let sideList of sideLists">
+      <li nz-menu-item *ngIf="sideList.id !== selectTaskId || sideList.tasks?.length == 0; else submenu" (click)="onOpenTask(sideList.id,null);$event.stopPropagation()">{{ sideList.name }}</li>
       <ng-template #submenu>
-        <li nz-submenu nzTitle="{{ list.name }}">
-          <ul *ngFor="let task of list.tasks">
-            <li nz-menu-item>{{ task.name }}</li>
+        <li nz-submenu nzTitle="{{ sideList.name }}" (click)="onOpenTask(sideList.id,null);$event.stopPropagation()" nzOpen>
+          <ul *ngFor="let task of sideList.tasks">
+            <li nz-menu-item (click)="onShowDetailModal(task)">{{ task.name }}</li>
+          </ul>
+        </li>
+      </ng-template>
+    </ul>
+  </li>
+  <li *ngIf="!!workspaces" nz-submenu nzTitle="Your Work Spaces" nzIcon="team" nzOpen>
+    <ul *ngFor="let workspace of workspaces">
+      <li nz-menu-item *ngIf="workspace.id !== selectWorkspaceId ||workspace.sharedLists.length == 0;else workspaceSubmenu" (click)="onOpenWorkspace(workspace.id);$event.stopPropagation()">{{ workspace.name }}</li>
+      <ng-template #workspaceSubmenu>
+        <li nz-submenu nzTitle="{{ workspace.name }}" (click)="onOpenWorkspace(workspace.id);$event.stopPropagation()" nzOpen>
+          <ul *ngFor="let sharedSideList of workspace.sharedSideLists">
+            <li nz-menu-item *ngIf="!sharedSideList.tasks || sharedSideList.id !== selectSharedSideTaskId || sharedSideList.tasks.length == 0; else submenu" (click)="onOpenTask(sharedSideList.id,workspace.id);$event.stopPropagation()">{{ sharedSideList.name }}</li>
+            <ng-template #submenu>
+              <li nz-submenu nzTitle="{{ sharedSideList.name }}" (click)="onOpenTask(sharedSideList.id,workspace.id);$event.stopPropagation()" nzOpen>
+                <ul *ngFor="let task of sharedSideList.tasks">
+                  <li nz-menu-item (click)="onShowDetailModal(task)">{{ task.name }}</li>
+                </ul>
+              </li>
+            </ng-template>
           </ul>
         </li>
       </ng-template>
@@ -14,7 +33,7 @@
 </ul>
 <ng-template #sideTemplate>
   <ul nz-menu nzMode="inline" class="sider-menu">
-    <li nz-submenu nzTitle="Your To Do Lists" nzIcon="appstore" nzOpen>
+    <li nz-submenu nzTitle="Your To Do Lists" nzIcon="schedule" nzOpen>
       <ul>
         <li nz-menu-item>Trip</li>
         <li nz-submenu nzTitle="Work" nzOpen>
@@ -22,6 +41,22 @@
             <li nz-menu-item>Wake up</li>
             <li nz-menu-item>Take the subway</li>
             <li nz-menu-item>Back Home</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li nz-submenu nzTitle="Your Work Spaces" nzIcon="team" nzOpen>
+      <ul>
+        <li nz-submenu nzTitle="Meeting" nzOpen>
+          <ul>
+            <li nz-menu-item>Trip</li>
+            <li nz-submenu nzTitle="Work" nzOpen>
+              <ul>
+                <li nz-menu-item>Wake up</li>
+                <li nz-menu-item>Take the subway</li>
+                <li nz-menu-item>Back Home</li>
+              </ul>
+            </li>
           </ul>
         </li>
       </ul>

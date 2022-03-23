@@ -1,13 +1,13 @@
 export class Task {
-  private _id;
-  private _name;
-  private _content;
-  private _startTime;
-  private _endTime;
-  private _done;
+  private _id:number;
+  private _name:string;
+  private _content:string;
+  private _startTime:string;
+  private _endTime:string;
+  private _done:boolean;
 
 
-  constructor(id, name, content, startTime, endTime, done) {
+  constructor(id: number, name: string, content: string, startTime: string, endTime: string, done: boolean) {
     this._id = id;
     this._name = name;
     this._content = content;
@@ -16,52 +16,51 @@ export class Task {
     this._done = done;
   }
 
-
-  get id() {
+  get id(): number {
     return this._id;
   }
 
-  set id(value) {
+  set id(value: number) {
     this._id = value;
   }
 
-  get name() {
+  get name(): string {
     return this._name;
   }
 
-  set name(value) {
+  set name(value: string) {
     this._name = value;
   }
 
-  get content() {
+  get content(): string {
     return this._content;
   }
 
-  set content(value) {
+  set content(value: string) {
     this._content = value;
   }
 
-  get startTime() {
+  get startTime(): string {
     return this._startTime;
   }
 
-  set startTime(value) {
+  set startTime(value: string) {
     this._startTime = value;
   }
 
-  get endTime() {
+  get endTime(): string {
     return this._endTime;
   }
 
-  set endTime(value) {
+  set endTime(value: string) {
     this._endTime = value;
   }
 
-  get done() {
+  get done(): boolean {
     return this._done;
   }
 
-  set done(value) {
+  set done(value: boolean) {
     this._done = value;
   }
 }

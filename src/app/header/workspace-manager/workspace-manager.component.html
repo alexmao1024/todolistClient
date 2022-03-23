@@ -1,0 +1,102 @@
+<nz-drawer
+  [nzClosable]="false"
+  [nzVisible]="isVisible"
+  nzPlacement="left"
+  nzTitle="Your workspaces"
+  (nzOnClose)="close()"
+  nzWidth = 1000px
+>
+  <ng-container *nzDrawerContent>
+    <nz-spin *ngIf="isLoading" nzTip="Loading..."></nz-spin>
+    <nz-table
+      *ngIf="!isLoading"
+      #workspacesData
+      [nzData]="workspaces"
+    >
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Owner</th>
+        <th>Participant</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let workspace of workspacesData.data; let i = index">
+        <td>
+          <div class="editable-cell" [hidden]="editId === workspace.id" (click)="startEdit(workspace)">
+            <span nz-typography>{{ workspace.name }}</span>
+          </div>
+          <input
+            [hidden]="editId !== workspace.id"
+            type="text"
+            nz-input
+            [(ngModel)]="workspace.name"
+            (blur)="stopEdit(workspace,i)"
+          />
+        </td>
+        <td>
+          {{ workspace.owner }}
+        </td>
+        <td>
+          <span *ngFor="let user of workspace.sharedUsers">{{ user }}&emsp;</span>
+        </td>
+        <td>
+          <button nz-button nzType="link"
+             [nzLoading]="removeId === workspace.id && isRemoveLoading"
+             [disabled]="workspace.owner != currentUser.username"
+             (click)="onRemove(workspace,i)"
+          >remove</button>
+          <button
+            (click)="onRemovePtpant(workspace.sharedUsers,workspace.id)"
+            nz-button nzType="default" nzDanger
+            [disabled]="workspace.owner != currentUser.username"
+          >Remove Users</button>
+          <button
+            (click)="onAddPtpant(workspace.sharedUsers,workspace.id)"
+            nz-button nzType="primary"
+            [disabled]="workspace.owner != currentUser.username"
+          >Invite Users</button>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-drawer>
+<nz-modal
+  [(nzVisible)]="isMouseOut"
+  nzTitle="Confirm"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  nzOkText="Yes"
+  nzCancelText="No"
+>
+  <ng-container *nzModalContent>
+    <h3>You still have unsaved data, are you sure you want to modify it?</h3>
+  </ng-container>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isUserMgVisible"
+  nzTitle="{{ isRemoveUsers ? 'Remove Users':'Invite Users'}}"
+  (nzOnCancel)="userMdHandleCancel()"
+  (nzOnOk)="userMdHandleOk()"
+  [nzOkLoading]="isOkLoading"
+  nzOkText="submit"
+  nzCancelText="Cancel"
+>
+  <ng-container *nzModalContent>
+    <nz-select
+      class="passenger-input"
+      nzMode="multiple"
+      nzPlaceHolder="Please select"
+      [(ngModel)]="listOfSelectedValue"
+    >
+      <nz-option
+        *ngFor="let option of nzOptions"
+        [nzLabel]="option.label"
+        [nzValue]="option.value"
+      ></nz-option>
+    </nz-select>
+  </ng-container>
+</nz-modal>

@@ -1,15 +1,17 @@
-export class List {
+import {Task} from "./task.model";
+
+export class SideList {
   private _id: number;
   private _name: string;
-  private _done: boolean;
+  private _tasks: Task[];
   private _workspaceId: number;
 
 
-  constructor(id: number, name: string, done: boolean) {
+  constructor(id: number, name: string) {
     this._id = id;
     this._name = name;
-    this._done = done;
   }
+
 
   get id(): number {
     return this._id;
@@ -27,12 +29,12 @@ export class List {
     this._name = value;
   }
 
-  get done(): boolean {
-    return this._done;
+  get tasks(): Task[] {
+    return this._tasks;
   }
 
-  set done(value: boolean) {
-    this._done = value;
+  set tasks(value: Task[]) {
+    this._tasks = value;
   }
 
   get workspaceId(): number {
@@ -43,4 +45,3 @@ export class List {
     this._workspaceId = value;
   }
 }
-

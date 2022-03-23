@@ -6,7 +6,7 @@
     <app-auth *ngIf="!isAuthenticated"></app-auth>
     <div *ngIf="isAuthenticated">
       <h3>Welcome,User：
-        <nz-avatar nzIcon="user" style="background-color:#87d068;"></nz-avatar>
+        <nz-avatar nzText="{{currentUser.username.charAt(0) | uppercase }}" style="background-color:#87d068;"></nz-avatar>
         <a nz-dropdown [nzDropdownMenu]="menu">
           {{ currentUser.username }}
           <i nz-icon nzType="down"></i>
@@ -15,8 +15,10 @@
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu nzSelectable>
           <li (click)="onLogout()" nz-menu-item>Logout</li>
+          <li (click)="onOpenWorkspaceMg()" nz-menu-item>Workspaces Manager</li>
         </ul>
       </nz-dropdown-menu>
     </div>
   </nz-page-header-extra>
 </nz-page-header>
+<app-workspace-manager [currentUser]="currentUser" [isOpenEvent]="isOpenWorkspaceMg"></app-workspace-manager>

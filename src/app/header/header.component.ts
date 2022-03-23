@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from "rxjs";
 import {AuthService} from "../service/auth.service";
 import {User} from "../model/user.model";
@@ -12,6 +12,8 @@ export class HeaderComponent implements OnInit,OnDestroy{
   isAuthenticated = false;
   private userSub: Subscription;
   currentUser: User;
+
+  isOpenWorkspaceMg = new EventEmitter<void>()
 
   constructor(private authService: AuthService) {
   }
@@ -29,5 +31,9 @@ export class HeaderComponent implements OnInit,OnDestroy{
 
   ngOnDestroy(): void {
     this.userSub.unsubscribe();
+  }
+
+  onOpenWorkspaceMg() {
+    this.isOpenWorkspaceMg.emit();
   }
 }

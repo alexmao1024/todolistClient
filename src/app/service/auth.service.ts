@@ -21,7 +21,7 @@ export class AuthService {
   }
 
   signUp(username: string,password: string) {
-    return this.http.post<AuthResponseData>('https://127.0.0.1:8000/signUp',
+    return this.http.post<AuthResponseData>('http://127.0.0.1:8000/signUp',
       {
         username: username,
         password: password
@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<AuthResponseData>('https://127.0.0.1:8000/login',
+    return this.http.post<AuthResponseData>('http://127.0.0.1:8000/login',
       {
         username: username,
         password: password

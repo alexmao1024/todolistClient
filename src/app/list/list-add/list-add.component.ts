@@ -1,11 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {ListService} from "../../service/list.service";
 import {List} from "../../model/list.model";
 import {DataStorageService} from "../../service/data-storage.service";
 import {User} from "../../model/user.model";
 import {NzMessageService} from "ng-zorro-antd/message";
-import {Observable, Observer} from "rxjs";
 import {ValidatorsService} from "../../service/validators.service";
 
 @Component({
@@ -13,36 +12,33 @@ import {ValidatorsService} from "../../service/validators.service";
   templateUrl: './list-add.component.html',
   styleUrls: ['./list-add.component.css']
 })
-export class ListAddComponent implements OnInit {
-
+export class ListAddComponent implements OnInit ,OnDestroy{
   @Input() isVisible = false;
   @Input() currentUser: User;
   @Output() invisible = new EventEmitter<void>();
   isOkLoading = false;
 
+  @Input() workspaceId: number = 0;
   newLists: List[];
   validateForm!: FormGroup;
   listOfControl: Array<{ id: number; controlInstance: string }> = [];
 
-  constructor(private fb: FormBuilder,
+  constructor(private formBuilder: FormBuilder,
               private listService: ListService,
               private dataStorageService: DataStorageService,
               private message: NzMessageService,
               private validatorsService: ValidatorsService) { }
 
+  ngOnDestroy(): void {
+    }
+
   ngOnInit(): void {
-    this.validateForm = this.fb.group({});
+    this.validateForm = this.formBuilder.group({});
     this.addField();
   }
 
   handleCancel(): void {
-    this.isVisible = false;
-    this.invisible.emit();
-    this.listOfControl.forEach(value =>{
-      this.validateForm.removeControl(value.controlInstance);
-    });
-    this.listOfControl = [];
-    this.addField();
+    this.resetSubmit();
   }
 
   addField(e?: MouseEvent): void {
@@ -73,18 +69,19 @@ export class ListAddComponent implements OnInit {
 
   submitForm(): void {
     if (this.validateForm.valid) {
-
       this.newLists = Object.values(this.validateForm.value).map(
         (element:string) => {
           return new List(null,element,false);
         }
       );
       this.isOkLoading = true;
-      this.dataStorageService.postLists(this.newLists,+this.currentUser.id).subscribe( value => {
+      this.dataStorageService.postLists(this.newLists,+this.currentUser.id,this.workspaceId).subscribe( value => {
+        this.isOkLoading = false;
         this.resetSubmit();
       },
         errorMessage => {
           this.message.create('error',errorMessage);
+          this.isOkLoading = false;
           this.resetSubmit();
         });
     } else {
@@ -102,7 +99,6 @@ export class ListAddComponent implements OnInit {
   }
 
   private resetSubmit () {
-    this.isOkLoading = false;
     this.isVisible = false;
     this.invisible.emit();
     this.listOfControl.forEach(value =>{

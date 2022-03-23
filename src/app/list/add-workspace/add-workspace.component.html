@@ -1,0 +1,38 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Establish Your Work Space"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="submitForm()"
+  nzOkText="submit"
+  nzCancelText="Cancel"
+  [nzOkLoading]="isOkLoading"
+  [nzOkDisabled]="!validateForm.valid"
+>
+  <div *nzModalContent>
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item>
+        <nz-form-label [nzXs]="24" [nzSm]="9" nzRequired nzFor="workspaceName">Your workspace</nz-form-label>
+        <nz-form-control [nzXs]="24" [nzSm]="20" [nzErrorTip]="nameErrorTpl">
+          <input type="text" nz-input formControlName="workspaceName" placeholder="name"/>
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Please input workspace's name!</ng-container>
+            <ng-container *ngIf="control.hasError('regMatch')">Cannot exceed 50 characters!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzXs]="24" [nzSm]="9" nzRequired nzFor="sharedUserNames">Choose your companion</nz-form-label>
+        <nz-form-control [nzXs]="24" [nzSm]="20" nzErrorTip="Please at least select an user!"
+        >
+          <nz-select
+            class="passenger-input"
+            formControlName="sharedUserNames"
+            nzMode="multiple"
+            nzPlaceHolder="Please select"
+            [nzOptions]="nzOptions"
+          ></nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+</nz-modal>

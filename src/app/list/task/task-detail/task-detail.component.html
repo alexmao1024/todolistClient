@@ -1,0 +1,23 @@
+<nz-drawer [(nzVisible)]="isVisible" [nzWidth]="640" [nzClosable]="false" (nzOnClose)="onClose()">
+  <ng-container *nzDrawerContent>
+    <p class="title" style=" margin-bottom: 24px;">Task detail</p>
+    <nz-descriptions [nzColumn]="2" nzTitle="Name">
+      <nz-descriptions-item nzTitle="Task Name" [nzSpan]="1">{{task?.name}}</nz-descriptions-item>
+    </nz-descriptions>
+    <nz-divider></nz-divider>
+    <nz-descriptions [nzColumn]="2" nzTitle="Detail">
+      <nz-descriptions-item nzTitle="Detail Content" [nzSpan]="2">
+        {{task?.content}}
+      </nz-descriptions-item>
+    </nz-descriptions>
+    <nz-divider></nz-divider>
+    <nz-descriptions [nzColumn]="2" nzTitle="Date Duration">
+      <nz-descriptions-item nzTitle="Start Time" [nzSpan]="1">{{task?.startTime}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="End Time" [nzSpan]="1">{{task?.endTime}}</nz-descriptions-item>
+    </nz-descriptions>
+    <nz-divider></nz-divider>
+    <nz-descriptions [nzColumn]="2" nzTitle="Completion Status">
+      <nz-descriptions-item nzTitle="Status" [nzSpan]="1">{{task?.done ? 'Finished':'Unfinished'}}</nz-descriptions-item>
+    </nz-descriptions>
+  </ng-container>
+</nz-drawer>

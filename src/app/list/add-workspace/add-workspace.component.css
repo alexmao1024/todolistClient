@@ -1,0 +1,8 @@
+.passenger-input {
+  width: 60%;
+  margin-right: 8px;
+}
+
+[nz-form] {
+  max-width: 600px;
+}

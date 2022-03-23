@@ -1,0 +1,22 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Share Your Lists"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="submitForm()"
+  nzOkText="submit"
+  nzCancelText="Cancel"
+  [nzOkLoading]="isOkLoading"
+>
+  <div *nzModalContent>
+    <nz-transfer
+      [nzDataSource]="lists"
+      nzShowSearch
+      [nzDisabled]="disabled"
+      [nzFilterOption]="filterOption"
+    ></nz-transfer>
+    <div style="margin-top: 8px;">
+      <nz-switch [(ngModel)]="disabled" nzCheckedChildren="disabled" nzUnCheckedChildren="disabled"></nz-switch>
+      <div></div>
+    </div>
+  </div>
+</nz-modal>

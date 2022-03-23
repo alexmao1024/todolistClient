@@ -3,10 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { zh_CN } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
-import zh from '@angular/common/locales/zh';
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -31,6 +28,11 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzTransferModule } from 'ng-zorro-antd/transfer';
 import {ListService} from "./service/list.service";
 import {ListComponent} from "./list/list.component";
 import { HeaderComponent } from './header/header.component';
@@ -43,6 +45,16 @@ import { AuthComponent } from './header/auth/auth.component';
 import { HostComponent } from './host/host.component';
 import {AuthInterceptorService} from "./header/auth/auth-interceptor.service";
 import { TaskComponent } from './list/task/task.component';
+import {TaskService} from "./service/task.service";
+import { TaskAddEditComponent } from './list/task/task-add-edit/task-add-edit.component';
+import { TaskDetailComponent } from './list/task/task-detail/task-detail.component';
+import {SidebarService} from "./service/sidebar.service";
+import {NZ_I18N, zh_CN} from "ng-zorro-antd/i18n";
+import zh from '@angular/common/locales/zh';
+import { WorkspaceComponent } from './workspace/workspace.component';
+import { AddWorkspaceComponent } from './list/add-workspace/add-workspace.component';
+import { ListsSharedComponent } from './list/lists-shared/lists-shared.component';
+import { WorkspaceManagerComponent } from './header/workspace-manager/workspace-manager.component';
 
 
 
@@ -59,7 +71,13 @@ registerLocaleData(zh);
     ListEditComponent,
     AuthComponent,
     HostComponent,
-    TaskComponent
+    TaskComponent,
+    TaskAddEditComponent,
+    TaskDetailComponent,
+    WorkspaceComponent,
+    AddWorkspaceComponent,
+    ListsSharedComponent,
+    WorkspaceManagerComponent
   ],
   imports: [
     BrowserModule,
@@ -88,12 +106,19 @@ registerLocaleData(zh);
     NzAvatarModule,
     NzGridModule,
     NzTypographyModule,
+    NzDatePickerModule,
+    NzDrawerModule,
+    NzDescriptionsModule,
+    NzSwitchModule,
+    NzTransferModule,
     ReactiveFormsModule,
     NzMessageModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },
     ListService,
+    TaskService,
+    SidebarService,
     NzMessageService,
     FormBuilder,
     FormControl,
@@ -106,4 +131,6 @@ registerLocaleData(zh);
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+}

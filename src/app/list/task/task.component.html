@@ -1,1 +1,85 @@
-<p>task works!</p>
+<nz-content>
+  <nz-page-header
+    class="site-page-header"
+    (nzBack)="onBack()"
+    nzBackIcon
+    nzTitle="Task"
+  >
+    <nz-page-header-extra>
+      <div class="send-request">
+        <nz-space nzSize="large">
+          <button *nzSpaceItem nz-button nzType="primary" (click)="onShowAddModal()"><i nz-icon nzType="form" nzTheme="outline"></i>Add</button>
+          <button *nzSpaceItem
+            nz-button
+            nzType="default"
+            nzDanger
+            [disabled]="!toggleSome"
+            (click)="onClearDone()"
+            [nzLoading]="isClearDoneLoading"
+          ><i nz-icon nzType="delete" nzTheme="outline"></i>
+            Clear Finished Items
+          </button>
+          <span *nzSpaceItem>Finished items: {{ selectTaskCount }}</span>
+        </nz-space>
+      </div>
+    </nz-page-header-extra>
+  </nz-page-header>
+  <div class="inner-content">
+    <nz-spin *ngIf="isLoading" nzTip="Loading..."></nz-spin>
+    <nz-table
+      *ngIf="!isLoading"
+      #tasksData
+      [nzData]="tasks"
+    >
+      <thead>
+      <tr>
+        <th [hidden]="tasks?.length == 0" [nzChecked]=toggleAll [nzIndeterminate]="toggleSome && !toggleAll" (nzCheckedChange)="onAllChecked($event)"></th>
+        <th nzWidth="80%">Name</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasksData.data; let i = index">
+          <td>
+            <a style="cursor: pointer" (click)="onItemChecked(task)">
+              <i
+                nz-icon
+                nzType="check-circle"
+                nzTheme="twotone"
+                nzTwotoneColor="{{ task.done ? '#52c41a' : '#E6F7FF' }}"
+              >
+              </i>
+            </a>
+          </td>
+          <td>
+            <span nz-typography><del *ngIf="task.done;else unfinished">{{ task.name }}</del></span>
+            <ng-template #unfinished>
+              {{ task.name }}
+            </ng-template>
+          </td>
+          <td>
+            <nz-space [nzSize]="'small'">
+              <a *nzSpaceItem  [hidden]="task.done" nz-button nzType="link" (click)="onShowEditModal(task,i)">edit</a>
+              <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === task.id &&isRemoveLoading" (click)="onRemoveList(task,i)">remove</a>
+              <a *nzSpaceItem  nz-button nzType="link" (click)="onShowDetailModal(task)">more</a>
+            </nz-space>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</nz-content>
+<app-task-add-edit
+  [currentWorkspaceId]="workspaceId"
+  [currentUserId]="+currentUser.id"
+  [isAddEvent]="isAdd"
+  [editTaskIndex]="taskIndex"
+  [currentListId]="currentListId"
+  [isVisible]="modalIsVisible"
+  (invisible)="onCloseModel()"
+></app-task-add-edit>
+<app-task-detail
+  [isVisible]="detailModalIsVisible"
+  [task]="taskDetail"
+  (invisible)="onCloseDetailModal()"
+></app-task-detail>

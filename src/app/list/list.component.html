@@ -1,24 +1,47 @@
 <nz-content>
   <nz-page-header
     class="site-page-header"
-    (nzBack)="onBack()"
-    nzBackIcon
     nzTitle="List"
   >
     <nz-page-header-extra>
       <div class="send-request">
-        <button nz-button nzType="primary" (click)="onShowAddModal()">Add</button>
-        <app-list-add [currentUser]="currentUser" [isVisible]="addIsVisible" (invisible)="onCloseAddModel()"></app-list-add>
-        <button
-          nz-button
-          nzType="danger"
-          [disabled]="!toggleSome"
-          (click)="onClearDone()"
-          [nzLoading]="isClearDoneLoading"
-        >
-          Clear Finished Items
-        </button>
-        <span>Finished items: {{ selectListCount }}</span>
+        <nz-space *ngIf="workspaceId == 0;else workspaceList" nzSize="large">
+          <button *nzSpaceItem nz-button nzType="primary" (click)="onShowWorkspaceModal()"><i nz-icon nzType="unordered-list" nzTheme="outline"></i>Establish Work Space</button>
+          <button *nzSpaceItem nz-button nzType="primary" (click)="onShowAddModal()"><i nz-icon nzType="form" nzTheme="outline"></i>Add</button>
+          <app-add-workspace [currentUser]="currentUser" [isVisible]="workspaceIsVisible" (invisible)="onCloseWorkspaceModel()"></app-add-workspace>
+          <app-list-add [currentUser]="currentUser" [isVisible]="addIsVisible" (invisible)="onCloseAddModel()"></app-list-add>
+          <button *nzSpaceItem
+            nz-button
+            nzType="default"
+            nzDanger
+            [disabled]="!toggleSome"
+            (click)="onClearDone()"
+            [nzLoading]="isClearDoneLoading"
+          ><i nz-icon nzType="delete" nzTheme="outline"></i>
+            Clear Finished Items
+          </button>
+          <span *nzSpaceItem>Finished items: {{ selectListCount }}</span>
+        </nz-space>
+        <ng-template #workspaceList>
+          <nz-space nzSize="large">
+            <button *nzSpaceItem [nzLoading]="isSharedLoading" nz-button nzType="primary" (click)="onShowSharedListModal()"><i nz-icon nzType="form" nzTheme="outline"></i>Shared Lists</button>
+            <app-lists-shared [workspaceOwner]="workspaceOwner" [workspaceId]="workspaceId" [isOpen]="sharedIsOpen" (inLoading)="onSharedLoadingEvent()" (invisible)="onCloseShareModal()"></app-lists-shared>
+            <button *nzSpaceItem nz-button nzType="primary" (click)="onShowAddModal()"><i nz-icon nzType="form" nzTheme="outline"></i>Add</button>
+            <app-add-workspace [currentUser]="currentUser" [isVisible]="workspaceIsVisible" (invisible)="onCloseWorkspaceModel()"></app-add-workspace>
+            <app-list-add [workspaceId]="workspaceId" [currentUser]="currentUser" [isVisible]="addIsVisible" (invisible)="onCloseAddModel()"></app-list-add>
+            <button *nzSpaceItem
+                    nz-button
+                    nzType="default"
+                    nzDanger
+                    [disabled]="!toggleSome"
+                    (click)="onClearDone()"
+                    [nzLoading]="isClearDoneLoading"
+            ><i nz-icon nzType="delete" nzTheme="outline"></i>
+              Clear Finished Items
+            </button>
+            <span *nzSpaceItem>Finished items: {{ selectListCount }}</span>
+          </nz-space>
+        </ng-template>
       </div>
     </nz-page-header-extra>
   </nz-page-header>
@@ -31,17 +54,24 @@
     >
       <thead>
       <tr>
-        <th [hidden]="lists.length == 0" [nzChecked]=toggleAll [nzIndeterminate]="toggleSome && !toggleAll" (nzCheckedChange)="onAllChecked($event)"></th>
+        <th [hidden]="lists?.length == 0" [nzChecked]=toggleAll [nzIndeterminate]="toggleSome && !toggleAll" (nzCheckedChange)="onAllChecked($event)"></th>
         <th nzWidth="80%">Name</th>
         <th>Action</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let list of listsData.data; let i = index">
-        <td
-          [nzChecked]="list.done"
-          (nzCheckedChange)="onItemChecked(list,i)"
-        ></td>
+        <td>
+          <a style="cursor: pointer" (click)="onItemChecked(list)">
+            <i
+              nz-icon
+              nzType="check-circle"
+              nzTheme="twotone"
+              nzTwotoneColor="{{ list.done ? '#52c41a' : '#E6F7FF' }}"
+            >
+            </i>
+          </a>
+        </td>
         <td>
           <div class="editable-cell" [hidden]="editId === list.id && !list.done" (click)="startEdit(list)">
             <span nz-typography><del *ngIf="list.done;else unfinished">{{ list.name }}</del></span>
@@ -60,8 +90,12 @@
         <td>
           <nz-space [nzSize]="'small'">
             <a *nzSpaceItem  [hidden]="list.done" nz-button nzType="link" (click)="onShowEditModal(list,i)">edit</a>
-            <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === list.id &&isRemoveLoading" (click)="onRemoveList(list,i)">remove</a>
-            <a *nzSpaceItem  nz-button nzType="link" (click)="msg.info('more')">more</a>
+            <a *nzSpaceItem  nz-button nzType="link" [nzLoading]="removeId === list.id &&isRemoveLoading" (click)="onRemoveList(list)">remove</a>
+            <a *nzSpaceItem
+               nz-button
+               nzType="link"
+               (click)="onShowSharedTask(list.id)"
+            >more</a>
           </nz-space>
         </td>
       </tr>
@@ -80,4 +114,4 @@
     <h3>You still have unsaved data, are you sure you want to modify it?</h3>
   </ng-container>
 </nz-modal>
-<app-list-edit [currentUser]="currentUser" [editListIndex]="listIndex" [editList]="listItem" [isVisible]="editIsVisible" (invisible)="onCloseEditModel()"></app-list-edit>
+<app-list-edit [workspaceId]="workspaceId" [currentUser]="currentUser" [editListIndex]="listIndex" [editList]="listItem" [isVisible]="editIsVisible" (invisible)="onCloseEditModel()"></app-list-edit>
