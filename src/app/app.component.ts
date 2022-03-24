@@ -131,11 +131,15 @@ export class AppComponent implements OnDestroy{
     if (data.type == 'create') {
       let workspace = new Workspace(data.name,data.owner,data.sharedUsers);
       workspace.id = data.id;
-      data.sharedUsers.forEach( sharedUsername => {
-        if (this.currentUser.username == sharedUsername || this.currentUser.username == data.owner){
-          this.workspaceService.addWorkspace(workspace);
-        }
-      });
+      if(this.currentUser.username == data.owner){
+        this.workspaceService.addWorkspace(workspace);
+      }else{
+        data.sharedUsers.forEach( sharedUsername => {
+          if (this.currentUser.username == sharedUsername){
+            this.workspaceService.addWorkspace(workspace);
+          }
+        });
+      }
     }else if (data.type == 'update') {
       if (data.name){
         this.workspaceService.editWorkspaceName(data.name,data.id);
