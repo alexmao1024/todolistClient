@@ -9,7 +9,7 @@ This project performs regular expression validation on login and registration fo
 
 ## Basic function
 You can create and manipulate your main list,and you can also create specific tasks under each list branch.
-A list has only name, and you can create multiple lists at a time. A task has a name, a specific content, and a start to end time. Both have completed and incomplete states. After finished them, you can check the list or task.
+A list has only name, and you can create multiple lists at a time. A task has a name, a specific content, and a start to end time. Both have completed and incomplete states. After finished them, you can mark them as complete by ticking.
 
 ## Innovative design
 
