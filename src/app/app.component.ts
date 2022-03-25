@@ -154,9 +154,6 @@ export class AppComponent implements OnDestroy{
           sideLists.push(new SideList(listIds[index],listName));
         });
         if (data.innerType == 'addLists' && data.ids.length > 0) {
-          if (data.id != 0){
-            this.sidebarService.addSideLists(sideLists);
-          }
           this.workspaceService.addSharedLists(newLists,data.id);
           this.workspaceService.addSharedSideLists(sideLists,data.id);
         }else if (data.innerType == 'removeLists' && data.ids.length > 0) {

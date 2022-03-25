@@ -24,11 +24,11 @@
       <tbody>
       <tr *ngFor="let workspace of workspacesData.data; let i = index">
         <td>
-          <div class="editable-cell" [hidden]="editId === workspace.id" (click)="startEdit(workspace)">
+          <div class="editable-cell" [hidden]="editId === workspace.id && workspace.owner == currentUser.username" (click)="startEdit(workspace)">
             <span nz-typography>{{ workspace.name }}</span>
           </div>
           <input
-            [hidden]="editId !== workspace.id"
+            [hidden]="editId !== workspace.id || workspace.owner != currentUser.username"
             type="text"
             nz-input
             [(ngModel)]="workspace.name"
