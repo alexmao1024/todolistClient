@@ -5,7 +5,7 @@ The code in the default branch has major problems with the design of the mercue,
 # TodolistClient
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.3.
-This project realizes the basic function of a to-do list.
+They realizes the basic function of a to-do list.
 
 ## Login and Register
 
