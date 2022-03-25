@@ -13,7 +13,7 @@ A list has only name, and you can create multiple lists at a time. A task has a 
 
 ## Innovative design
 
-This project uses mercue technology for real-time updates.We have a workspace that allows multiple users to work together to operate multiple lists or tasks.
+This project uses [mercue](https://mercure.rocks/) technology for real-time updates.We have a workspace that allows multiple users to work together to operate multiple lists or tasks.
 You can add your existing lists to the workspaces you already participated in. Alternatively, you can also create new lists or tasks directly in them.
 All users in the same workspace can perform arbitrary operations on the lists or tasks.The owner of the workspace can invite any registered user, or remove participants.For all workspace-related operations, participants in that workspace are subscribed to their changes in real-time.
 
@@ -23,4 +23,4 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## Background implementation
 
-The background of this project uses the symfony framework, which is implemented in php. It can be viewed in my repo. Of course, you can also implement the background code yourself.
+The background of this project uses the [symfony](https://symfony.com/) framework, which is implemented in php. It can be viewed in my repo. Of course, you can also implement the background code yourself.
