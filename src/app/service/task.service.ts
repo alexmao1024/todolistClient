@@ -3,24 +3,14 @@ import {Task} from "../model/task.model";
 import {Injectable, OnDestroy} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
-export class TaskService implements OnDestroy{
+export class TaskService{
   constructor() {
-    const url = new URL('http://127.0.0.1:3000/.well-known/mercure');
-    url.searchParams.append('topic', 'https://todolist.com/tasks/workspaces');
-    this.eventSource = new EventSource(url);
-    this.eventSource.onmessage = ev => this.synchronisationEvent.next(JSON.parse(ev.data));
   }
 
-  ngOnDestroy(): void {
-    this.eventSource.close();
-  }
-
-  isAddTask = new Subject<[Task,number,number]>();
+  isAddTask = new Subject<[Task,number]>();
   isEditTask = new Subject<Task>();
   tasksChanged = new Subject<Task[]>();
-  synchronisationEvent = new Subject<any>();
 
-  private eventSource:EventSource;
   private _tasks: Task[] = [];
 
   setTasks(tasks: Task[]) {

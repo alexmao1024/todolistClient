@@ -104,9 +104,24 @@ export class ListsSharedComponent implements OnInit , OnDestroy{
     sharedTransLists?.forEach( list => {
       // @ts-ignore
       listsIds.push(list.key);
-    })
+    });
+    let newLists:List[] = [];
+    let sideLists:SideList[] = [];
+    listsIds.forEach( id => {
+      let findIndex = this.sharedLists.findIndex(list => list.id == id);
+      if (findIndex > -1){
+        newLists.push(this.sharedLists[findIndex]);
+        sideLists.push(this.sideLists[findIndex]);
+      }
+    });
     if (this.workspaceId != 0){
       this.dataStorageService.patchWorkspace(listsIds,this.workspaceId,this.userId,(direction == 'right' ? 'addLists' : 'removeLists'),null,null).subscribe(value => {
+        if (direction == 'right'){
+          this.workspaceService.addSharedLists(newLists,this.workspaceId);
+          this.workspaceService.addSharedSideLists(sideLists,this.workspaceId);
+        }else {
+          this.workspaceService.removeSharedLists(listsIds,this.workspaceId);
+        }
         this.isOkLoading = false;
         this.isVisible = false;
         this.invisible.emit();

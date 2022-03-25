@@ -160,6 +160,12 @@ export class ListComponent implements OnInit, OnDestroy{
     this.removeId = list.id;
     this.isRemoveLoading = true;
     this.dataStorageService.deleteLists([list],+this.currentUser.id,this.workspaceId).subscribe(value => {
+      if (this.workspaceId == 0){
+        this.listService.removeListById(list.id);
+      }else {
+        this.sidebarService.removeSideList(list.id);
+        this.workspaceService.removeSharedList(list.id,this.workspaceId);
+      }
       this.isRemoveLoading = false;
       },
       errorMessage => {
@@ -192,6 +198,15 @@ export class ListComponent implements OnInit, OnDestroy{
     this.isClearDoneLoading = true;
     this.dataStorageService.deleteLists(this.listService.selectLists,+this.currentUser.id,this.workspaceId).
     subscribe(value => {
+      if (this.workspaceId == 0){
+        this.listService.selectLists.forEach( list => {
+          this.listService.removeListById(list.id);
+        });
+      }else {
+        this.listService.selectLists.forEach( list => {
+          this.workspaceService.removeSharedList(list.id,this.workspaceId);
+        });
+      }
       this.isClearDoneLoading = false;
     },
       errorMessage => {
@@ -221,6 +236,12 @@ export class ListComponent implements OnInit, OnDestroy{
   handleOk() {
     this.isOkLoading = true;
     this.dataStorageService.patchList(this.editList,+this.currentUser.id,true,false,null,this.workspaceId).subscribe(value => {
+      if (this.workspaceId == 0){
+        this.listService.editListById(this.editList.id,this.editList.name,this.editList.done);
+      }else {
+        this.sidebarService.editSideList(new SideList(this.editList.id,this.editList.name));
+        this.workspaceService.editSharedList(this.editList,this.workspaceId);
+      }
       this.isOkLoading = false;
       this.isMouseOut = false;
       this.editId = null;

@@ -1,23 +1,13 @@
 import {List} from "../model/list.model";
 import {Subject} from "rxjs";
-import {Injectable, NgZone, OnDestroy} from "@angular/core";
+import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
-export class ListService implements OnDestroy{
+export class ListService{
 
   constructor() {
-    const url = new URL('http://127.0.0.1:3000/.well-known/mercure');
-    url.searchParams.append('topic', 'https://todolist.com/lists/workspaces');
-    this.eventSource = new EventSource(url);
-    this.eventSource.onmessage = ev => this.synchronisationEvent.next(JSON.parse(ev.data));
   }
 
-  ngOnDestroy(): void {
-    this.eventSource.close();
-  }
-
-  private eventSource:EventSource;
-  synchronisationEvent = new Subject<any>();
   listsChanged = new Subject<List[]>();
   listsRemoved = new Subject<number[]>();
 
@@ -33,7 +23,7 @@ export class ListService implements OnDestroy{
   }
 
   get toggleAll () {
-    return this._lists?.every( list => list.done );
+    return this._lists.every( list => list.done );
   }
 
   get toggleSome () {

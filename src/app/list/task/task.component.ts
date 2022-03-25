@@ -159,6 +159,9 @@ export class TaskComponent implements OnInit,OnDestroy{
     this.isClearDoneLoading = true;
     this.dataStorageService.deleteTasks(this.taskService.selectTasks,+this.currentUser.id,this.workspaceId).subscribe(
       value => {
+        this.taskService.selectTasks.forEach( task => {
+          this.taskService.removeTaskById(task.id);
+        });
         this.isClearDoneLoading = false;
       },
       errorMessage => {
@@ -191,6 +194,7 @@ export class TaskComponent implements OnInit,OnDestroy{
     this.isRemoveLoading = true;
     this.dataStorageService.deleteTasks([task],+this.currentUser.id,this.workspaceId).subscribe(
       value => {
+        this.taskService.removeTaskById(task.id);
         this.isRemoveLoading = false;
       },
       errorMessage => {

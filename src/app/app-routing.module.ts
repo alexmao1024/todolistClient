@@ -25,7 +25,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'workspaces/:id',
+    path: 'workspaces/:workId',
     component: WorkspaceComponent,
     canActivate: [AuthGuard]
   }

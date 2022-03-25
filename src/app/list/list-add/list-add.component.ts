@@ -6,6 +6,9 @@ import {DataStorageService} from "../../service/data-storage.service";
 import {User} from "../../model/user.model";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {ValidatorsService} from "../../service/validators.service";
+import {SidebarService} from "../../service/sidebar.service";
+import {SideList} from "../../model/sideList.model";
+import {WorkspaceService} from "../../service/workspace.service";
 
 @Component({
   selector: 'app-list-add',
@@ -26,6 +29,8 @@ export class ListAddComponent implements OnInit ,OnDestroy{
   constructor(private formBuilder: FormBuilder,
               private listService: ListService,
               private dataStorageService: DataStorageService,
+              private workspaceService: WorkspaceService,
+              private sidebarService: SidebarService,
               private message: NzMessageService,
               private validatorsService: ValidatorsService) { }
 
@@ -75,7 +80,18 @@ export class ListAddComponent implements OnInit ,OnDestroy{
         }
       );
       this.isOkLoading = true;
-      this.dataStorageService.postLists(this.newLists,+this.currentUser.id,this.workspaceId).subscribe( value => {
+      this.dataStorageService.postLists(this.newLists,+this.currentUser.id,this.workspaceId).subscribe( newLists => {
+        let sideLists:SideList[] = [];
+        newLists.forEach( list => {
+          sideLists.push(new SideList(list.id,list.name));
+        });
+        if (this.workspaceId == 0){
+          this.listService.addLists(newLists);
+        }else {
+          this.sidebarService.addSideLists(sideLists);
+          this.workspaceService.addSharedLists(newLists,this.workspaceId);
+          this.workspaceService.addSharedSideLists(sideLists,this.workspaceId);
+        }
         this.isOkLoading = false;
         this.resetSubmit();
       },

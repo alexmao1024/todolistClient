@@ -78,7 +78,13 @@ export class DataStorageService {
       {
         lists:listsName,
         workspaceId:workspaceId
-      }).pipe(catchError(DataStorageService.handleError))
+      }).pipe(catchError(DataStorageService.handleError),
+      map(value => {
+        value.ids.forEach( (id,index) => {
+          lists[index].id = id;
+        });
+        return lists;
+      }));
   }
 
   postTasks (task:Task,listId:number,userId: number,workId: number) {
@@ -92,7 +98,11 @@ export class DataStorageService {
         endTime: task.endTime,
         userId: userId,
         workId: workId
-      }).pipe(catchError(DataStorageService.handleError));
+      }).pipe(catchError(DataStorageService.handleError),
+      map( value => {
+        task.id = value.id;
+        return task;
+      }));
   }
 
   postWorkspace (workspace: Workspace,userId: number) {
@@ -101,7 +111,11 @@ export class DataStorageService {
       {
         name:workspace.name,
         sharedUsers:workspace.sharedUsers
-      }).pipe(catchError(DataStorageService.handleError));
+      }).pipe(catchError(DataStorageService.handleError),
+      map( value => {
+        workspace.id = value.id;
+        return workspace;
+      }));
   }
 
   patchWorkspace (ids:[],workspaceId: number,userId: number,type: WorkspaceOptType,name:string,names:[]) {

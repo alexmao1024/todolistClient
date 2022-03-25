@@ -57,6 +57,12 @@ export class ListEditComponent implements OnInit ,OnDestroy{
     if (this.validateForm.valid) {
       this.isOkLoading = true;
       this.dataStorageService.patchList(this.editList,+this.currentUser.id,true,false,null,this.workspaceId).subscribe(value => {
+          if (this.workspaceId == 0){
+            this.listService.editListById(this.editList.id,this.editList.name,this.editList.done);
+          }else {
+            this.sidebarService.editSideList(new SideList(this.editList.id,this.editList.name));
+            this.workspaceService.editSharedList(this.editList,this.workspaceId);
+          }
           this.resetSubmit();
         },
         errorMessage => {

@@ -90,7 +90,8 @@ export class TaskAddEditComponent implements OnInit {
         this.validateForm.value.dateTimeRange[1]?.toLocaleString()?? null,
         false
       );
-      this.dataStorageService.postTasks(newTask,this.currentListId,this.currentUserId,this.currentWorkspaceId).subscribe(value => {
+      this.dataStorageService.postTasks(newTask,this.currentListId,this.currentUserId,this.currentWorkspaceId).subscribe(resTasks => {
+          this.taskService.addTask(resTasks);
           this.resetSubmit();
         },
         errorMessage => {

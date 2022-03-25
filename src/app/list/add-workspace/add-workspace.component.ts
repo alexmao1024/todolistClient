@@ -4,8 +4,9 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DataStorageService} from "../../service/data-storage.service";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {ValidatorsService} from "../../service/validators.service";
-import {NzCascaderOption, NzCascaderOptionComponent} from "ng-zorro-antd/cascader";
+import {NzCascaderOption} from "ng-zorro-antd/cascader";
 import {Workspace} from "../../model/workspace.model";
+import {WorkspaceService} from "../../service/workspace.service";
 
 @Component({
   selector: 'app-add-workspace',
@@ -23,7 +24,8 @@ export class AddWorkspaceComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
               private dataStorageService: DataStorageService,
               private message: NzMessageService,
-              private validatorsService: ValidatorsService) { }
+              private validatorsService: ValidatorsService,
+              private workspaceService: WorkspaceService) { }
 
   ngOnInit(): void {
     this.dataStorageService.fetchOtherUsers(+this.currentUser.id).subscribe( users =>{
@@ -64,7 +66,8 @@ export class AddWorkspaceComponent implements OnInit {
         this.validateForm.value.workspaceName,
         this.currentUser.username,
         this.validateForm.value.sharedUserNames);
-      this.dataStorageService.postWorkspace(workspace,+this.currentUser.id).subscribe( value => {
+      this.dataStorageService.postWorkspace(workspace,+this.currentUser.id).subscribe( resWorkspace => {
+        this.workspaceService.addWorkspace(resWorkspace);
         this.isVisible = false;
         this.invisible.emit();
         this.validateForm.reset();

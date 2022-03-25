@@ -8,21 +8,12 @@ import {SideList} from "../model/sideList.model";
 @Injectable({providedIn: 'root'})
 export class WorkspaceService {
   constructor() {
-    const url = new URL('http://127.0.0.1:3000/.well-known/mercure');
-    url.searchParams.append('topic', 'https://todolist.com/workspaces');
-    this.eventSource = new EventSource(url);
-    this.eventSource.onmessage = ev => this.synchronisationEvent.next(JSON.parse(ev.data));
-  }
-
-  ngOnDestroy(): void {
-    this.eventSource.close();
   }
 
   workspacesChanged = new Subject<Workspace[]>();
   workspaceDeleted = new Subject<number>();
-  synchronisationEvent = new Subject<any>();
 
-  private eventSource:EventSource;
+  url = new URL('http://127.0.0.1:3000/.well-known/mercure');
   private _workspaces: Workspace[] = [];
 
   setWorkspaces(workspaces: Workspace[]) {
@@ -96,7 +87,6 @@ export class WorkspaceService {
     })
     if (workIndex > -1){
       this._workspaces[workIndex].sharedLists.push(...lists);
-      console.log(this._workspaces[workIndex].sharedLists);
       this.workspacesChanged.next(this._workspaces.slice());
     }
   }
@@ -117,9 +107,9 @@ export class WorkspaceService {
     }
   }
 
-  removeSharedLists(removeLists: List[],workspaceId: number) {
-    removeLists.forEach( list => {
-      this.removeSharedList(list.id,workspaceId);
+  removeSharedLists(ids: number[],workspaceId: number) {
+    ids.forEach( id => {
+      this.removeSharedList(id,workspaceId);
     })
   }
 

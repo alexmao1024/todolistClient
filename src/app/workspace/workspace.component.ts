@@ -35,8 +35,7 @@ export class WorkspaceComponent implements OnInit ,OnDestroy {
               private taskService: TaskService,
               private message: NzMessageService,
               private listService: ListService,
-              private cDRef: ChangeDetectorRef,
-              private zone: NgZone) {}
+              private cDRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.userSub = this.authService.user.subscribe(user => {
@@ -45,7 +44,7 @@ export class WorkspaceComponent implements OnInit ,OnDestroy {
     if (!!this.currentUser) {
       this.route.params.subscribe(
         (params: Params) => {
-          this.currentWorkspaceId = +params['id'];
+          this.currentWorkspaceId = +params['workId'];
           this.isFetch.emit(true);
           this.dataStorageService.fetchWorkspaces(+this.currentUser.id).subscribe(workspaces => {
               this.workspaces = workspaces;

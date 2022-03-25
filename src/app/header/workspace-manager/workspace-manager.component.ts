@@ -6,6 +6,7 @@ import {WorkspaceService} from "../../service/workspace.service";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {ListComponent} from "../../list/list.component";
 import {NzCascaderOption} from "ng-zorro-antd/cascader";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 
 @Component({
   selector: 'app-workspace-manager',
@@ -27,6 +28,7 @@ export class WorkspaceManagerComponent implements OnInit {
   editWorkspace: Workspace;
   editIndex: number;
   mgWorkspaceId: number;
+  currentWorkspaceId: number;
 
   isMouseOut: boolean = false;
   isOkLoading: boolean = false;
@@ -40,16 +42,19 @@ export class WorkspaceManagerComponent implements OnInit {
   constructor(private dataStorageService: DataStorageService,
               private workspaceService: WorkspaceService,
               private message: NzMessageService,
+              private router: Router,
               private zone: NgZone) { }
 
   ngOnInit(): void {
     this.isOpenEvent.subscribe( value => {
+      if (this.router.url.split('/')[1] == 'workspaces'){
+        this.currentWorkspaceId = +this.router.url.split('/')[2];
+      }
       this.isVisible = true;
       this.isLoading = true;
       this.dataStorageService.fetchWorkspaces(+this.currentUser.id).subscribe( workspaces => {
         this.workspaces = workspaces;
           this.dataStorageService.fetchOtherUsers(+this.currentUser.id).subscribe( users =>{
-
               Object.values(users).forEach( user => {
                 this.originOptions.push({
                   value: user.username,
@@ -85,6 +90,10 @@ export class WorkspaceManagerComponent implements OnInit {
     this.removeId = workspace.id;
     this.isRemoveLoading = true;
     this.dataStorageService.deleteWorkspace(workspace,+this.currentUser.id).subscribe(value => {
+      if (this.currentWorkspaceId == workspace.id){
+        this.router.navigate(['lists']);
+      }
+      this.workspaceService.removeWorkspace(workspace.id);
       this.isRemoveLoading = false;
       },
       errorMessage => {
@@ -118,6 +127,7 @@ export class WorkspaceManagerComponent implements OnInit {
   handleOk() {
     this.isOkLoading = true;
     this.dataStorageService.patchWorkspace(null,this.editWorkspace.id,+this.currentUser.id,null,this.editWorkspace.name,null).subscribe(() => {
+        this.workspaceService.editWorkspaceName(this.editWorkspace.name,this.editWorkspace.id);
         this.isOkLoading = false;
         this.isMouseOut = false;
         this.editId = null;
@@ -167,6 +177,11 @@ export class WorkspaceManagerComponent implements OnInit {
       this.isRemoveUsers?'removeUsers':'addUsers',
       null,
       selectValues).subscribe( value => {
+        if (this.isRemoveUsers){
+          this.workspaceService.removeSharedUsers(selectValues,this.mgWorkspaceId);
+        }else {
+          this.workspaceService.addSharedUsers(selectValues,this.mgWorkspaceId);
+        }
       this.isUserMgVisible = false;
       this.nzOptions = [];
       this.isOkLoading = false;
